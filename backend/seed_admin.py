@@ -5,22 +5,21 @@ from app.models.user import User, RoleEnum
 app = create_app()
 
 with app.app_context():
-    # Borra el admin existente si hay
-    existing = User.query.filter_by(email="admin@test.com").first()
-    if existing:
-        db.session.delete(existing)
-        db.session.commit()
-        print(" Admin anterior eliminado")
+    existing_admin = User.query.filter_by(email="admin@admin.com").first()
 
-    # Crea admin nuevo
-    admin = User(
-        name="Admin",
-        email="admin@test.com",
-        password=bcrypt.generate_password_hash("123456").decode("utf-8"),
-        role=RoleEnum.ADMIN
-    )
-    db.session.add(admin)
-    db.session.commit()
-    print("✅ Admin creado correctamente")
-    print("   Email: admin@test.com")
-    print("   Password: 123456")
+    if existing_admin:
+        print("Admin ya existe")
+    else:
+        hashed_password = bcrypt.generate_password_hash("Admin123456").decode("utf-8")
+
+        admin = User(
+            name="Administrador",
+            email="admin@admin.com",
+            password=hashed_password,
+            role=RoleEnum.ADMIN
+        )
+
+        db.session.add(admin)
+        db.session.commit()
+
+        print("Admin creado correctamente")

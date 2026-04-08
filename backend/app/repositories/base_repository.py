@@ -8,7 +8,7 @@ class BaseRepository:
         return self.model.query.all()
 
     def get_by_id(self, id):
-        return self.model.query.get(id)
+        return db.session.get(self.model, id)
 
     def save(self, instance):
         db.session.add(instance)

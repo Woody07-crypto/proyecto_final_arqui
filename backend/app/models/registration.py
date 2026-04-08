@@ -1,5 +1,5 @@
 from app.extensions import db
-from datetime import datetime
+from datetime import datetime, timezone
 import enum
 
 class RegistrationStatusEnum(str, enum.Enum):
@@ -11,7 +11,7 @@ class Registration(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     event_id = db.Column(db.Integer, db.ForeignKey("events.id"), nullable=False)
     attendee_id = db.Column(db.Integer, db.ForeignKey("attendees.id"), nullable=False)
-    registration_date = db.Column(db.DateTime, default=datetime.utcnow)
+    registration_date = db.Column(db.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     status = db.Column(db.Enum(RegistrationStatusEnum), nullable=False, default=RegistrationStatusEnum.ACTIVO)
 
     def cancel(self):

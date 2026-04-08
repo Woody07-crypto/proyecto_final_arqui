@@ -123,7 +123,7 @@ Content-Type: application/json
 | Código | Mensaje | Causa |
 |--------|---------|-------|
 | 400 | "Email y password son obligatorios" | Faltan campos requeridos |
-| 401 | "Credenciales inválidas" | Email o contraseña incorrectos |
+| 401 | "Credenciales invalidas" | Email o contraseña incorrectos |
 
 ---
 

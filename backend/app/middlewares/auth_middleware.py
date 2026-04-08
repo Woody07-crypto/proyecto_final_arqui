@@ -1,6 +1,7 @@
 from functools import wraps
 
 from flask import g, jsonify
+from flask_jwt_extended.exceptions import JWTExtendedException
 from flask_jwt_extended import get_jwt, get_jwt_identity, verify_jwt_in_request
 
 from app.repositories.user_repository import UserRepository
@@ -30,7 +31,7 @@ def token_required(fn):
 
 			g.current_user = user
 			return fn(*args, **kwargs)
-		except Exception:
+		except JWTExtendedException:
 			return _json_error("Token invalido o ausente", 401)
 
 	return wrapper

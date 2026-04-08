@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+:root {
+  --bg-main: #060606;
+  --text-main: #ffffff;
+  --color-primary: #ff544c;
+  --color-accent: #2ab0a3;
+  --color-secondary: #ffe458;
+  --color-warm: #fe9a34;
+  --accent-coral: #ff544c;
+  --accent-yellow: #ffe458;
+  --accent-teal: #2ab0a3;
+  --accent-orange: #fe9a34;
+  --glass-surface: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.22);
+  --glass-strong: rgba(255, 255, 255, 0.16);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--text-main);
+  background-color: #000000;
+  background-image: radial-gradient(circle at 12% 12%, rgba(255, 84, 76, 0.18), transparent 38%),
+    radial-gradient(circle at 86% 18%, rgba(42, 176, 163, 0.18), transparent 40%),
+    linear-gradient(165deg, #0f0f10 0%, #040404 48%, #000000 100%);
+}
+
+.font-app {
+  font-family: var(--font-red-hat-display), "Segoe UI", sans-serif;
+}
+
+.glass-bar {
+  border: 1px solid var(--glass-border);
+  background: linear-gradient(130deg, var(--glass-strong), rgba(255, 255, 255, 0.05));
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.focus-outline:focus-visible {
+  outline: 2px solid var(--accent-yellow);
+  outline-offset: 2px;
+}

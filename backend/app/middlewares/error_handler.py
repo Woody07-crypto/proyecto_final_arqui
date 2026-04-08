@@ -2,6 +2,8 @@ from flask import jsonify
 from flask_jwt_extended.exceptions import JWTExtendedException
 from marshmallow import ValidationError
 
+from app.exceptions import AuthenticationFailed, ResourceNotFound
+
 
 def register_error_handlers(app):
 	@app.errorhandler(ValidationError)
@@ -11,6 +13,14 @@ def register_error_handlers(app):
 	@app.errorhandler(ValueError)
 	def handle_value_error(error):
 		return jsonify({"message": str(error)}), 400
+
+	@app.errorhandler(ResourceNotFound)
+	def handle_resource_not_found(error):
+		return jsonify({"message": str(error)}), 404
+
+	@app.errorhandler(AuthenticationFailed)
+	def handle_authentication_failed(error):
+		return jsonify({"message": str(error)}), 401
 
 	@app.errorhandler(PermissionError)
 	def handle_permission_error(error):

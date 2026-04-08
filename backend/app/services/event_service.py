@@ -1,6 +1,7 @@
 from app.repositories.event_repository import EventRepository
 from app.models.event import Event, EventStatusEnum
 from app.models.user import RoleEnum
+from app.exceptions import ResourceNotFound
 
 event_repo = EventRepository()
 
@@ -19,7 +20,7 @@ class EventService:
     def get_by_id(self, event_id, user):
         event = event_repo.get_by_id(event_id)
         if not event:
-            raise ValueError("Evento no encontrado")
+            raise ResourceNotFound("Evento no encontrado")
         if user.role != RoleEnum.ADMIN and event.organizer_id != user.id:
             raise PermissionError("No tienes permiso para ver este evento")
         return event
@@ -55,7 +56,7 @@ class EventService:
             raise PermissionError("Solo el administrador puede cambiar el estado")
         event = event_repo.get_by_id(event_id)
         if not event:
-            raise ValueError("Evento no encontrado")
+            raise ResourceNotFound("Evento no encontrado")
         event.status = EventStatusEnum(status)
         event_repo.commit()
         return event

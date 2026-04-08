@@ -1,5 +1,5 @@
 from app.extensions import db
-from datetime import datetime
+from datetime import datetime, timezone
 import enum
 
 class EventStatusEnum(str, enum.Enum):
@@ -13,13 +13,17 @@ class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text, nullable=True)
-    date = db.Column(db.DateTime, nullable=False)
+    date = db.Column(db.DateTime(timezone=True), nullable=False)
     location = db.Column(db.String(255), nullable=False)
     max_capacity = db.Column(db.Integer, nullable=False)
     status = db.Column(db.Enum(EventStatusEnum), nullable=False, default=EventStatusEnum.ACTIVO)
     organizer_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(
+        db.DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+    )
     registrations = db.relationship("Registration", backref="event", lazy=True)
 
     def is_active(self):
@@ -31,5 +35,5 @@ class Event(db.Model):
             self.status = EventStatusEnum.SOLD_OUT
 
     def check_finished(self):
-        if self.date < datetime.utcnow() and self.status == EventStatusEnum.ACTIVO:
+        if self.date < datetime.now(timezone.utc) and self.status == EventStatusEnum.ACTIVO:
             self.status = EventStatusEnum.FINALIZADO

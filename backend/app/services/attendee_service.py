@@ -2,9 +2,10 @@ from app.repositories.attendee_repository import AttendeeRepository
 from app.repositories.registration_repository import RegistrationRepository
 from app.repositories.event_repository import EventRepository
 from app.models.attendee import Attendee
-from app.models.registration import Registration
+from app.models.registration import Registration, RegistrationStatusEnum
 from app.models.event import EventStatusEnum
 from app.models.user import RoleEnum
+from app.exceptions import ResourceNotFound
 
 attendee_repo = AttendeeRepository()
 registration_repo = RegistrationRepository()
@@ -21,7 +22,7 @@ class AttendeeService:
             raise PermissionError("Solo administrador puede ver asistentes")
         attendee = attendee_repo.get_by_id(attendee_id)
         if not attendee:
-            raise ValueError("Asistente no encontrado")
+            raise ResourceNotFound("Asistente no encontrado")
         return attendee
 
     def get_attendee_registrations(self, attendee_id, user):
@@ -29,13 +30,13 @@ class AttendeeService:
             raise PermissionError("Solo administrador puede ver inscripciones por asistente")
         attendee = attendee_repo.get_by_id(attendee_id)
         if not attendee:
-            raise ValueError("Asistente no encontrado")
+            raise ResourceNotFound("Asistente no encontrado")
         return registration_repo.get_by_attendee(attendee_id)
 
     def register_to_event(self, event_id, data, user):
         event = event_repo.get_by_id(event_id)
         if not event:
-            raise ValueError("Evento no encontrado")
+            raise ResourceNotFound("Evento no encontrado")
         if user.role != RoleEnum.ADMIN and event.organizer_id != user.id:
             raise PermissionError("No tienes permiso para registrar asistentes en este evento")
         if event.status != EventStatusEnum.ACTIVO:
@@ -56,7 +57,7 @@ class AttendeeService:
     def get_event_attendees(self, event_id, user):
         event = event_repo.get_by_id(event_id)
         if not event:
-            raise ValueError("Evento no encontrado")
+            raise ResourceNotFound("Evento no encontrado")
         if user.role != RoleEnum.ADMIN and event.organizer_id != user.id:
             raise PermissionError("No tienes permiso para ver los asistentes de este evento")
         return registration_repo.get_active_by_event(event_id)
@@ -64,7 +65,9 @@ class AttendeeService:
     def cancel_registration(self, registration_id, user):
         registration = registration_repo.get_by_id(registration_id)
         if not registration:
-            raise ValueError("Inscripcion no encontrada")
+            raise ResourceNotFound("Registro no encontrado")
+        if registration.status == RegistrationStatusEnum.CANCELADO:
+            raise ValueError("La inscripcion ya estaba cancelada")
         event = event_repo.get_by_id(registration.event_id)
         if user.role != RoleEnum.ADMIN and event.organizer_id != user.id:
             raise PermissionError("No tienes permiso para cancelar esta inscripcion")
